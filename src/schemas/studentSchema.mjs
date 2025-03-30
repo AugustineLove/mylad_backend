@@ -10,6 +10,11 @@ const StudentSchema = new Schema({
         ref: "Class", 
         required: true,
     },
+    studentClassName: {
+        type: String,
+        ref: "Class",
+        required: true,
+    },
     school: { 
         type: Schema.Types.ObjectId, // Link to the School model
         ref: "School", 
@@ -42,6 +47,7 @@ const StudentSchema = new Schema({
         ],
         default: undefined
     },
+    balance:{type: Number}
 }, { timestamps: true });
 
 export const Student = model("Student", StudentSchema);

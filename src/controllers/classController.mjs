@@ -87,3 +87,84 @@ export const promoteAllClassStudents = async (req, res) => {
         console.log(error)
     }
 }
+
+export const getFixedAmount = async (req, res) => {
+    try {
+      const { classId, feeType } = req.params;
+  
+      // Find the class by ID
+      const classData = await Class.findById(classId);
+  
+      if (!classData) {
+        return res.status(404).json({ message: "Class not found" });
+      }
+  
+      // Find the specific feeType in the class
+      const fee = classData.fees.find((f) => f.feeType === feeType);
+  
+      if (!fee) {
+        return res.status(404).json({ message: `No fixed amount found for fee type: ${feeType}` });
+      }
+  
+      res.status(200).json({ feeType: fee.feeType, amount: fee.amount, dueDate: fee.dueDate });
+    } catch (error) {
+      console.error("Error fetching fixed fee amount:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  };
+
+  export const updateFixedAmount = async (req, res) => {
+    try {
+        const { classId, feeType } = req.params;
+        const { amount, dueDate } = req.body;
+
+        // Find the class by ID
+        const classData = await Class.findById(classId);
+        if (!classData) {
+            return res.status(404).json({ message: "Class not found" });
+        }
+
+        // Find the specific feeType in the class
+        const fee = classData.fees.find((f) => f.feeType === feeType);
+        if (!fee) {
+            return res.status(404).json({ message: `No fixed amount found for fee type: ${feeType}` });
+        }
+
+        const oldAmount = fee.amount; // Store the previous fixed fee amount
+        const amountDifference = amount - oldAmount; // Calculate difference
+
+        // Update the fee amount and dueDate if provided
+        if (amount !== undefined) fee.amount = amount;
+        if (dueDate !== undefined) fee.dueDate = dueDate;
+
+        // Save the updated class document
+        await classData.save();
+
+        // Find all students in this class
+        const students = await Student.find({ studentClass: classId });
+
+        // Adjust each student's fee record
+        for (const student of students) {
+            // Find the specific feeType in the student's fee list
+            const studentFee = student.fees.find((f) => f.feeType === feeType);
+
+            if (studentFee) {
+                studentFee.amount += amountDifference; // Increase the student's fee instead of overwriting it
+                student.balance += amountDifference; // Adjust student balance
+            }
+
+            await student.save();
+        }
+
+        res.status(200).json({ 
+            message: "Fee updated successfully and student balances adjusted", 
+            feeType: fee.feeType, 
+            amount: fee.amount, 
+            dueDate: fee.dueDate 
+        });
+    } catch (error) {
+        console.error("Error updating fixed fee amount:", error);
+        res.status(500).json({ message: "Internal server error" });
+    }
+};
+

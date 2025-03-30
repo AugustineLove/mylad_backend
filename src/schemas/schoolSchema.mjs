@@ -17,11 +17,20 @@ const SchoolSchema = new Schema({
         type: Schema.Types.String,
         required: false,
     },
+    schoolEmail: {
+        type: Schema.Types.String,
+        required: true,
+    },
     schoolPassword: {
         type: Schema.Types.String,
         required: true,
     },
-    
-}, { timestamps: true })
+    feeTypes: [
+        {
+            feeType: { type: Schema.Types.String, required: true },
+            amount: { type: Schema.Types.Number, required: true }
+        }
+    ]
+}, { timestamps: true });
 
 export const School = model("School", SchoolSchema);

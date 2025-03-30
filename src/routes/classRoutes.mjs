@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { addClass, getAllClasses, getAllStudentsInClass, } from "../controllers/classController.mjs";
+import { addClass, getAllClasses, getAllStudentsInClass, getFixedAmount, updateFixedAmount, } from "../controllers/classController.mjs";
 
 const classRoutes = Router();
 
@@ -7,5 +7,7 @@ classRoutes.post('/add',addClass);
 
 classRoutes.get('/:schoolId', getAllClasses)
 classRoutes.get('/:classId/students', getAllStudentsInClass)
+classRoutes.get('/:classId/:feeType', getFixedAmount)
+classRoutes.put('/:classId/:feeType', updateFixedAmount)
 
 export default classRoutes;
