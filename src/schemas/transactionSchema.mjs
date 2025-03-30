@@ -5,6 +5,11 @@ const TransactionSchema = new Schema({
     ref: "Student", // Assuming there's a Student model
     required: true,
   },
+  schoolId: {
+    type: Schema.Types.ObjectId,
+    ref: "School",
+    required: true,
+  },
   amount: {
     type: Number,
     required: true,

@@ -1,7 +1,6 @@
 import { Student } from "../schemas/studentSchema.mjs";
 import { School } from "../schemas/schoolSchema.mjs";
 import { Class } from "../schemas/classSchema.mjs"; 
-import { createTransaction } from "./transactionController.mjs";
 
 export const addStudent = async (req, res) => {
     const { studentName, studentClass, school, studentAddress, studentParentName, studentParentNumber } = req.body;

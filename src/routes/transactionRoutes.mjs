@@ -1,7 +1,12 @@
 import { Router } from "express";
-import { createTransaction, getTransactions } from "../controllers/transactionController.mjs";
+import { createTransaction, getAllTransactions, getTransactions, globalTransactions } from "../controllers/transactionController.mjs";
 
-export const transactionRoutes = Router();
+
+const transactionRoutes = Router();
 
 transactionRoutes.post('/:studentId', createTransaction)
 transactionRoutes.get('/:studentId', getTransactions)
+transactionRoutes.get("/trans/filterTransaction", getAllTransactions)
+transactionRoutes.get('/', globalTransactions)
+
+export default transactionRoutes;
