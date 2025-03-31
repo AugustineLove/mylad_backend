@@ -1,6 +1,6 @@
 import { School } from "../schemas/schoolSchema.mjs";
 import { Student } from "../schemas/studentSchema.mjs";
-
+import axios from 'axios';
 
 export const getAllChildren = async (req, res) => {
     const { parentNumber } = req.params;
@@ -54,3 +54,34 @@ export const verifyParentNumber = async (req, res) => {
         res.status(500).json({ message: "Internal server error." });
     }
 };
+
+export const sendParentMessage = async (req, res) => {
+    console.log("sending message")
+    const { messageTo, messageFrom, message } = req.body;
+    const data = {
+        "sender": messageFrom,
+        "message": message,
+        "recipients": [messageTo],
+        // When sending SMS to Nigerian recipients, specify the use_case field
+        // "use_case" = "transactional"
+      };
+
+        const config = {
+        method: 'post',
+        url: 'https://sms.arkesel.com/api/v2/sms/send',
+        headers: {
+        'api-key': 'Q2FiT3lFbGxURHNob1pGbldwTEE'
+        },
+        data : data
+        };
+
+    axios(config)
+    .then(function (response) {
+    console.log(JSON.stringify(response.data));
+    res.status(200).json(response.data)
+    })
+    .catch(function (error) {
+    console.log(error);
+});
+
+}

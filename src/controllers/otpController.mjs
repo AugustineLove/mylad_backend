@@ -41,7 +41,10 @@ const headers = {
   'api-key': 'Q2FiT3lFbGxURHNob1pGbldwTEE',
 }
 axios.post('https://sms.arkesel.com/api/otp/verify',data,{headers})
-.then(response => res.status(200).json(response.data))
+.then(response => {
+  console.log(`Response data: ${response}`)
+  res.status(200).json(response.data)
+})
 .catch(error => console.log(error));
 };
 
