@@ -3,7 +3,7 @@ import { School } from "../schemas/schoolSchema.mjs";
 import { Class } from "../schemas/classSchema.mjs"; 
 
 export const addStudent = async (req, res) => {
-    const { studentName, studentClass, school, studentAddress, studentParentName, studentParentNumber } = req.body;
+    const { studentFirstName, studentSurname, studentOtherNames, studentGender, studentClass, school, studentAddress, studentParentSurname, studentParentFirstName, studentParentNumber } = req.body;
 
     try {
         // Check if the school exists
@@ -28,17 +28,22 @@ export const addStudent = async (req, res) => {
         const classFees = classData.fees.map(fee => ({
             feeType: fee.feeType,
             amount: fee.amount, // Use the class fee amount
-            status: "unpaid"
+            status: fee.stuats,
+            dueDate: fee.dueDate,
         }));
 
         // Create new student with class-specific fee structure
         const newStudent = new Student({
-            studentName,
+            studentFirstName,
+            studentSurname,
+            studentOtherNames,
+            studentGender,
             studentClass: classData._id,
             studentClassName: classData.className,
             school,
             studentAddress,
-            studentParentName,
+            studentParentSurname,
+            studentParentFirstName,
             studentParentNumber,
             level, 
             fees: classFees, // ✅ Use class-specific fees

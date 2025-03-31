@@ -20,12 +20,7 @@ export const addSchool = async (req, res) => {
           schoolEmail,
           schoolPassword: hashedPassword,
           feeTypes: [  // Default fee types
-              { feeType: "School Fees", amount: 0 },
-              { feeType: "Admission Fees", amount: 0 },
-              { feeType: "PTA Fees", amount: 0 },
-              { feeType: "Exam Fees", amount: 0 },
-              { feeType: "Feeding Fees", amount: 0 },
-              { feeType: "Other Fees", amount: 0 }
+              
           ]
       });
 
@@ -33,26 +28,20 @@ export const addSchool = async (req, res) => {
 
       // Default classes to be created
       const defaultClasses = [
-          { name: "Pre-School", level: 0 },
-          { name: "Basic 1", level: 1 },
-          { name: "Basic 2", level: 2 },
-          { name: "Basic 3", level: 3 },
-          { name: "Basic 4", level: 4 },
-          { name: "Basic 5", level: 5 },
-          { name: "Basic 6", level: 6 },
-          { name: "Basic 7", level: 7 },
-          { name: "Basic 8", level: 8 },
-          { name: "Basic 9", level: 9 }
-      ];
-
-      // Default fees per class
-      const defaultFees = [
-          { feeType: "School Fees", amount: 0 },
-          { feeType: "Admission Fees", amount: 0 },
-          { feeType: "PTA Fees", amount: 0 },
-          { feeType: "Exam Fees", amount: 0 },
-          { feeType: "Feeding Fees", amount: 0 },
-          { feeType: "Other Fees", amount: 0 }
+          { name: "Creche", level: 0 },
+          { name: "Nursery 1", level: 1 },
+          { name: "Nursery 2", level: 2 },
+          { name: "Kindergarten 1", level: 3 },
+          { name: "Kindergarten 2", level: 4 },
+          { name: "Basic 1", level: 5 },
+          { name: "Basic 2", level: 6 },
+          { name: "Basic 3", level: 7 },
+          { name: "Basic 4", level: 8 },
+          { name: "Basic 5", level: 9 },
+          { name: "Basic 6", level: 10 },
+          { name: "Basic 7", level: 11 },
+          { name: "Basic 8", level: 12 },
+          { name: "Basic 9", level: 13 }
       ];
 
       // Create classes with default fee types
@@ -61,7 +50,7 @@ export const addSchool = async (req, res) => {
               className: classData.name,
               level: classData.level,
               school: savedSchool._id,
-              fees: defaultFees // Set the default fee types with fixed amounts
+              fees: [] // Set the default fee types with fixed amounts
           }).save();
       });
 
@@ -117,7 +106,7 @@ export const addFeeTypeToSchool = async (req, res) => {
                   fees: { 
                       feeType, 
                       amount, 
-                      status: "unpaid" // Default to unpaid
+                      status: "Unpaid" // Default to unpaid
                   } 
               } 
           }

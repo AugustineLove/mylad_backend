@@ -10,9 +10,9 @@ const data = {
   expiry: 5,
   length: 6,
   medium: 'sms',
-  message: 'This is OTP from My Lad, Company Limited',
+  message: 'This is OTP from My Lad, Company Limited is %otp_code%',
   number: phoneNumber,
-  sender_id: 'Arkesel',
+  sender_id: 'My Lad',
   type: 'numeric',
 };
 const headers = {

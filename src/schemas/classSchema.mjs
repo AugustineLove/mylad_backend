@@ -19,6 +19,7 @@ const ClassSchema = new Schema(
       {
         feeType: { type: String, required: true },
         amount: { type: Number, required: true },
+        status: { type: String, enum: ["Paid", "Unpaid"] },
         dueDate: { type: Date, default: null }, // Optional due date
       },
     ],

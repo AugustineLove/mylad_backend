@@ -59,34 +59,53 @@ export const getAllStudentsInClass = async (req, res) => {
     }
 }
 
-export const promoteAllClassStudents = async (req, res) => {
-    const { classId } = req.body;
+export const promoteClassStudents = async (req, res) => {
+    const { classId, students } = req.body;
 
     try {
-        if(!classId) {
+        if (!classId) {
             return res.status(400).json({ message: "Class ID is required" });
         }
-        const studentsToPromote = await Student.find({studentClass: classId});
+
+        let studentsToPromote;
         
-        if(studentsToPromote.length === 0) {
-            return res.status(404).json({ message: "No students found for this class" });
+        if (students && students.length > 0) {
+            // Promote only selected students
+            studentsToPromote = await Student.find({ _id: { $in: students } });
+        } else {
+            // Promote all students in the class
+            studentsToPromote = await Student.find({ studentClass: classId });
+        }
+
+        if (studentsToPromote.length === 0) {
+            return res.status(404).json({ message: "No students found to promote" });
         }
 
         for (let student of studentsToPromote) {
             const currentClass = await Class.findById(student.studentClass);
             if (!currentClass) continue;
 
-            const nextClass = await Class.findOne({ school: currentClass.school, level: currentClass.level + 1 });
+            // Find the next class level in the same school
+            const nextClass = await Class.findOne({ 
+                school: currentClass.school, 
+                level: currentClass.level + 1 
+            });
+
             if (!nextClass) continue;
+
             student.studentClass = nextClass._id;
             student.level = nextClass.level;
             await student.save();
         }
 
+        return res.status(200).json({ message: "Students promoted successfully", count: studentsToPromote.length });
+
     } catch (error) {
-        console.log(error)
+        console.error(error);
+        res.status(500).json({ message: "Server error during promotion" });
     }
-}
+};
+
 
 export const getFixedAmount = async (req, res) => {
     try {

@@ -5,7 +5,7 @@ import studentRoutes from "./studentRoutes.mjs";
 import parentRoutes from "./parentRoutes.mjs";
 import otpRoutes from "./otpRoutes.mjs";
 import transactionRoutes from "./transactionRoutes.mjs";
-
+import paystackRoutes from "./paystackRoutes.mjs";
 const router = Router();
 
 router.use('/api/schools', schoolRoutes); 
@@ -14,5 +14,6 @@ router.use('/api/students', studentRoutes);
 router.use('/api/parents', parentRoutes);
 router.use('/api/transactions', transactionRoutes)
 router.use('/api/otp', otpRoutes);
+router.use('/api/paystack', paystackRoutes)
 
 export default router;

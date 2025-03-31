@@ -100,7 +100,7 @@ export const createTransaction = async (req, res) => {
         students.forEach((student) => {
             studentDetailsMap[student._id.toString()] = {
                 className: student.studentClassName,
-                studentName: student.studentName, // Assuming "studentName" field exists
+                studentName: `${student.studentSurname} ${student.studentFirstName} ${student.studentOtherNames}`, // Assuming "studentName" field exists
             };
         });
 
