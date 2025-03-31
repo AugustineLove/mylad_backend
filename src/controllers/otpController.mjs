@@ -5,23 +5,30 @@ dotenv.config();
 
 // Function to send a template SMS
 export const sendTemplateSMS = async (req, res) => {
-    const { phoneNumber } = req.body;
-const data = {
-  expiry: 5,
-  length: 6,
-  medium: 'sms',
-  message: 'This is OTP from My Lad, Company Limited is %otp_code%',
-  number: phoneNumber,
-  sender_id: 'My Lad',
-  type: 'numeric',
+  const { phoneNumber } = req.body;
+  const data = {
+      expiry: 5,
+      length: 6,
+      medium: 'sms',
+      message: 'Your OTP verification code from My Lad Company Limited is %otp_code%',
+      number: phoneNumber,
+      sender_id: 'My Lad',
+      type: 'numeric',
+  };
+  const headers = {
+      'api-key': 'Q2FiT3lFbGxURHNob1pGbldwTEE',
+  };
+
+  try {
+      const response = await axios.post('https://sms.arkesel.com/api/otp/generate', data, { headers });
+      console.log(response.data); // Log response data to verify API response
+      res.status(200).json(response.data); // Send response back to frontend
+  } catch (error) {
+      console.error('SMS Error:', error.response ? error.response.data : error.message);
+      res.status(500).json({ error: 'Failed to send OTP' });
+  }
 };
-const headers = {
-  'api-key': 'Q2FiT3lFbGxURHNob1pGbldwTEE',
-}
-axios.post('https://sms.arkesel.com/api/otp/generate',data,{headers})
-.then(response => console.log(response))
-.catch(error => console.log(error));
-}
+
 
 // Function to send a scheduled template SMS
 export const sendScheduledSMS = async () => {
