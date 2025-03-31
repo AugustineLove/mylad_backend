@@ -30,12 +30,13 @@ export const sendTemplateSMS = async (req, res) => {
 };
 
 export const verifyOTP = async (req, res) => {
-  const { phoneNumber, otpCode } = req.body;
-const data = {
-  api_key: 'Q2FiT3lFbGxURHNob1pGbldwTEE',
-  code: otpCode,
-  number: phoneNumber
-};
+  const { phoneNumber, code } = req.body;
+  const data = {
+    api_key: 'Q2FiT3lFbGxURHNob1pGbldwTEE',
+    code: code,
+    number: phoneNumber
+  };
+  console.log(data)
 const headers = {
   'api-key': 'Q2FiT3lFbGxURHNob1pGbldwTEE',
 }
