@@ -34,7 +34,7 @@ export const verifyOTP = async (req, res) => {
 
   const data = {
       number: phoneNumber,
-      otp: otpCode
+      code: otpCode
   };
 
   const headers = {
