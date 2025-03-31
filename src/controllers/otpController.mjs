@@ -29,6 +29,32 @@ export const sendTemplateSMS = async (req, res) => {
   }
 };
 
+export const verifyOTP = async (req, res) => {
+  const { phoneNumber, otpCode } = req.body;
+
+  const data = {
+      number: phoneNumber,
+      otp: otpCode
+  };
+
+  const headers = {
+      'api-key': 'Q2FiT3lFbGxURHNob1pGbldwTEE'
+  };
+
+  try {
+      const response = await axios.post('https://sms.arkesel.com/api/otp/verify', data, { headers });
+      console.log(response.data); // Log response data to verify API response
+      
+      if (response.data.status === "success") {
+          return res.status(200).json({ message: "OTP verified successfully", data: response.data });
+      } else {
+          return res.status(400).json({ message: "OTP verification failed", error: response.data });
+      }
+  } catch (error) {
+      console.error('OTP Verification Error:', error.response ? error.response.data : error.message);
+      res.status(500).json({ error: "Failed to verify OTP" });
+  }
+};
 
 // Function to send a scheduled template SMS
 export const sendScheduledSMS = async () => {
