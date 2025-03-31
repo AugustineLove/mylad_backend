@@ -32,12 +32,12 @@ export const sendTemplateSMS = async (req, res) => {
 export const verifyOTP = async (req, res) => {
   const { phoneNumber, otpCode } = req.body;
 const data = {
-  api_key: 'cE9QRUkdjsjdfjkdsj9kdiieieififiw=',
+  api_key: 'Q2FiT3lFbGxURHNob1pGbldwTEE',
   code: otpCode,
   number: phoneNumber
 };
 const headers = {
-  'api-key': 'cE9QRUkdjsjdfjkdsj9kdiieieififiw=',
+  'api-key': 'Q2FiT3lFbGxURHNob1pGbldwTEE',
 }
 axios.post('https://sms.arkesel.com/api/otp/verify',data,{headers})
 .then(response => console.log(response))
