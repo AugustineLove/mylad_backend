@@ -93,12 +93,19 @@ export const promoteClassStudents = async (req, res) => {
 
             if (!nextClass) continue;
 
+            // Update student with the next class and level
             student.studentClass = nextClass._id;
             student.level = nextClass.level;
+            student.studentClassName = nextClass.className; // Update className
+
+            // Save the student with updated details
             await student.save();
         }
 
-        return res.status(200).json({ message: "Students promoted successfully", count: studentsToPromote.length });
+        return res.status(200).json({
+            message: "Students promoted successfully",
+            count: studentsToPromote.length
+        });
 
     } catch (error) {
         console.error(error);

@@ -1,57 +1,89 @@
 import { Student } from "../schemas/studentSchema.mjs";
 import { School } from "../schemas/schoolSchema.mjs";
 import { Class } from "../schemas/classSchema.mjs"; 
+import mongoose from "mongoose";
+
+// ✅ Define class-name to level mapping
+const classLevelMap = {
+    "Creche": 1,
+    "Nursery 1": 2,
+    "Nursery 2": 3,
+    "Kindergarten 1": 4,
+    "Kindergarten 2": 5,
+    "Basic 1": 6,
+    "Basic 2": 7,
+    "Basic 3": 8,
+    "Basic 4": 9,
+    "Basic 5": 10,
+    "Basic 6": 11,
+    "Basic 7": 12,
+    "Basic 8": 13,
+    "Basic 9": 14,
+};
 
 export const addStudent = async (req, res) => {
-    const { studentFirstName, studentSurname, studentOtherNames, studentGender, studentClass, school, studentAddress, studentParentSurname, studentParentFirstName, studentParentNumber } = req.body;
-
     try {
-        // Check if the school exists
+        const {
+            studentFirstName,
+            studentSurname,
+            studentOtherNames,
+            studentGender,
+            studentClass, // Example: "Basic 6"
+            school,
+            studentAddress,
+            studentParentSurname,
+            studentParentFirstName,
+            studentParentNumber
+        } = req.body;
+
+        // ✅ Validate school
         const existingSchool = await School.findById(school);
         if (!existingSchool) {
             return res.status(404).json({ message: "School not found" });
         }
 
-        if (!school) {
-            return res.status(400).json({ message: "School ID is required" });
-        }
-
-        // Find the class in the specified school
+        // ✅ Validate class existence in the school
         const classData = await Class.findOne({ className: studentClass, school: school });
         if (!classData) {
             return res.status(404).json({ message: "Class not found in the specified school" });
         }
 
-        const level = classData.level !== undefined ? classData.level : 0;
+        // ✅ Assign level based on className
+        const level = classLevelMap[studentClass] || 0; // Default to 0 if not found
 
-        // ✅ Retrieve the class-specific fixed fees
+        // ✅ Retrieve class-specific fixed fees
         const classFees = classData.fees.map(fee => ({
             feeType: fee.feeType,
-            amount: fee.amount, // Use the class fee amount
-            status: fee.stuats,
+            amount: fee.amount,
+            status: fee.status,
             dueDate: fee.dueDate,
         }));
 
-        // Create new student with class-specific fee structure
+        // ✅ Create new student
         const newStudent = new Student({
             studentFirstName,
             studentSurname,
             studentOtherNames,
             studentGender,
-            studentClass: classData._id,
-            studentClassName: classData.className,
+            studentClass: classData._id, // Store the class ID
+            studentClassName: studentClass, // Store the class name
             school,
             studentAddress,
             studentParentSurname,
             studentParentFirstName,
             studentParentNumber,
-            level, 
-            fees: classFees, // ✅ Use class-specific fees
+            level, // ✅ Store the mapped level
+            fees: classFees, // ✅ Apply class-specific fees
             balance: classFees.reduce((acc, fee) => acc + fee.amount, 0) // ✅ Set initial balance based on total fees
         });
 
+        // ✅ Save student to database
         const savedStudent = await newStudent.save();
-        return res.status(201).json({ message: "Student added successfully", student: savedStudent });
+
+        return res.status(201).json({
+            message: "Student added successfully",
+            student: savedStudent
+        });
     } catch (error) {
         console.error(error);
         return res.status(500).json({ message: "Internal server error" });
@@ -59,7 +91,29 @@ export const addStudent = async (req, res) => {
 };
 
 
+export const deleteStudents = async (req, res) => {
+    try {
+        const { studentIds } = req.body;
 
+        if (!studentIds || !Array.isArray(studentIds) || studentIds.length === 0) {
+            return res.status(400).json({ message: "Invalid studentIds array" });
+        }
+
+        // Log studentIds for debugging
+        console.log("Student IDs received for deletion: ", studentIds);
+
+        // Delete students in bulk
+        const result = await Student.deleteMany({ _id: { $in: studentIds.map(id => new mongoose.Types.ObjectId(id)) } });
+
+        if (result.deletedCount === 0) {
+            return res.status(404).json({ message: "No students found to delete" });
+        }
+
+        res.status(200).json({ message: "Students deleted successfully", deletedCount: result.deletedCount });
+    } catch (error) {
+        res.status(500).json({ message: "Server error", error: error.message });
+    }
+};
 
 export const promoteAllStudents = async (req, res) => {
     const { schoolId } = req.body; 
@@ -72,24 +126,32 @@ export const promoteAllStudents = async (req, res) => {
         
         const students = await Student.find({ school: schoolId });
 
+        console.log(`Students found: ${students}`)
+
         if (students.length === 0) {
             return res.status(404).json({ message: "No students found for this school" });
         }
 
-        for (let student of students) {
+        for (let student of studentsToPromote) {
             const currentClass = await Class.findById(student.studentClass);
-
-            if (!currentClass) continue; 
-            
-            const nextClass = await Class.findOne({ level: currentClass.level + 1 });
-
-            if (!nextClass) continue; 
-
-            
-            student.studentClass = nextClass._id;
-            student.level = nextClass.level
+            if (!currentClass) continue;
+        
+            // Find the next class based on level increment
+            const nextClass = await Class.findOne({ 
+                school: currentClass.school, 
+                level: currentClass.level + 1 
+            });
+        
+            if (!nextClass) continue;
+        
+            // Update student details
+            student.studentClass = nextClass._id;  // Update class reference
+            student.level = nextClass.level;       // Update level
+            student.className = nextClass.className; // Ensure class name updates
+        
             await student.save();
         }
+        
 
         res.status(200).json({ message: "Students promoted successfully" });
     } catch (error) {

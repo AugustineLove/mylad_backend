@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { addFeeTypeToSchool, addSchool, getAllSchools, getASchool, loginSchool } from "../controllers/schoolController.mjs";
 
+
 const schoolRoutes = Router();
 
 schoolRoutes.get('/', getAllSchools);
