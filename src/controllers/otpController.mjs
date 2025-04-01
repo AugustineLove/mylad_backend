@@ -10,9 +10,9 @@ export const sendTemplateSMS = async (req, res) => {
       expiry: 5,
       length: 6,
       medium: 'sms',
-      message: 'Your OTP verification code from My Lad Company Limited is %otp_code%',
+      message: 'Your OTP verification code from My Ward Company Limited is %otp_code%',
       number: phoneNumber,
-      sender_id: 'My Lad',
+      sender_id: 'My Ward',
       type: 'numeric',
   };
   const headers = {

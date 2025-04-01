@@ -64,6 +64,38 @@ export const addSchool = async (req, res) => {
 };
 
 
+export const editSchoolDetails = async (req, res) => {
+    const { schoolId, schoolName, schoolAddress, schoolPhone, schoolEmail, schoolWebsite, schoolPassword } = req.body;
+
+    try {
+        const school = await School.findById(schoolId);
+        if (!school) {
+            return res.status(404).json({ message: "School not found" });
+        }
+
+        // Update fields if provided
+        if (schoolName) school.schoolName = schoolName;
+        if (schoolAddress) school.schoolAddress = schoolAddress;
+        if (schoolPhone) school.schoolPhone = schoolPhone;
+        if (schoolEmail) school.schoolEmail = schoolEmail;
+        if (schoolWebsite) school.schoolWebsite = schoolWebsite;
+
+        // Hash new password if provided
+        if (schoolPassword) {
+            const saltRounds = 10;
+            school.schoolPassword = await bcrypt.hash(schoolPassword, saltRounds);
+        }
+
+        const updatedSchool = await school.save();
+
+        return res.status(200).json({ message: "School details updated successfully", school: updatedSchool });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ message: "Internal server error" });
+    }
+};
+
+
 
 export const addFeeTypeToSchool = async (req, res) => {
   try {
