@@ -166,7 +166,7 @@ export const getASchool = async (req, res) => {
   const { schoolId } = req.params;
     try {
       const school = await School.findById(schoolId)
-      return res.send(school);
+      return res.status(200).send(school);
     } catch (error) {
       return res.status(500).send(error.message);
     }
